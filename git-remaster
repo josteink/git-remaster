@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+HASMAIN=`git branch | grep main | wc -l`
+HASMASTER=`git branch | grep master | wc -l`
+
+echo ""
+echo "Git REmaster - enforce consistent branching, fix repos with SJWisms"
+echo ""
+
+if [ "$HASMAIN" == "0" ] ; then
+    echo "No standard-deviating main-branch detected."
+    exit 0
+fi
+
+# assume all SJW-repos with main-branch has main as upstream branch.
+UPSTREAM=origin/main
+
+echo "WARNING: Standard-deviating main-branch detected."
+echo "Determing best cause of action."
+
+SHOULDFIX=0
+if [ "$HASMASTER" == "0" ] ; then
+    echo "No standard-compliant master-branch detected."
+    echo "Renaming master to main."
+    git checkout main
+    git checkout -b master
+    git branch -u $UPSTREAM
+    git branch -d main
+    echo "Repo fixed. Git master is now master."
+    exit 0
+fi
+
+echo "Standard-compliant master-branch detected. Checking for conflicts."
+
+BRANCHDIFF=`git rev-list --left-right --count master...main`
+AHEAD_MASTER=`echo $BRANCHDIFF | awk '{ print $1 }'`
+AHEAD_MAIN=`echo $BRANCHDIFF | awk '{ print $2 }'`
+
+if [ "$AHEAD_MASTER$AHEAD_MAIN" == "00" ] ; then
+    echo "INFO: Branches are equal. Eliminating main."
+    git checkout master
+    git branch -u $UPSTREAM
+    git branch -d main
+    echo "Repo fixed. Git master is now master."
+    exit 0
+fi
+
+if [ "$AHEAD_MAIN" == 0 ] ; then 
+    echo "INFO: Git master is ahead. Eliminating main."
+    git checkout master
+    git branch -d main
+    git branch -u $UPSTREAM
+    echo "Repo fixed. Git master is now master."
+    exit 0
+fi   
+
+if [ "$AHEAD_MASTER" == 0 ] ; then 
+    echo "INFO: Standard-deviating main-branch is ahead. Fixing."
+    git checkout main
+    git branch -d master
+    git checkout -b master
+    git branch -u $UPSTREAM
+    git branch -d main
+    echo "Repo fixed. Git master is now master."
+    exit 0
+fi   
+
+# unrecoverable conflict detected
+echo "ERROR: Branches are not equal and ahead branch cannot be automatically detected."
+echo "ABORTING!"
+exit 1

@@ -17,6 +17,9 @@ Git remaster has the following features:
 * Automatically detect repos with standard-deviations
 * Automatically fix repos with standard-deviations
 * Ensures you can always work with git master locally!
+* Ability to run as a global `post-checkout` hook, run when cloning
+  new repos, meaning all repos you work with will be `master`-based,
+  automatically.
 
 # Installation
 
@@ -30,7 +33,19 @@ mkdir -p $HOME/bin
 ln -s $PWD/git-remaster $HOME/bin/
 ````
 
-## Usage
+## Usage - automatic
+
+To install as a global `post-checkout` hook use the provided
+installation script:
+
+````sh
+cd $HOME/repos/git-remaster
+./install-hook.sh
+````
+
+From now on, git-remaster will be active on all new repos you clone!
+
+## Usage - manual
 
 Enter any repo, broken or not, and simply enter `git remaster`
 
@@ -50,8 +65,3 @@ git pull             # still works!
 
 # done
 ````
-
-# TODO
-
-* Add ability to run automatically as git `post-checkout` when cloning new repos, making it globally installed and active at all times.
-

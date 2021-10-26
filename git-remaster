@@ -22,9 +22,9 @@ SHOULDFIX=0
 if [ "$HASMASTER" == "0" ] ; then
     echo "No standard-compliant master-branch detected."
     echo "Renaming master to main."
-    git checkout main
-    git checkout -b master
-    git branch -u $UPSTREAM
+    git branch master main
+    git branch -u $UPSTREAM master
+    git symbolic-ref HEAD refs/heads/master
     git branch -d main
     echo "Repo fixed. Git master is now master."
     exit 0
@@ -38,8 +38,8 @@ AHEAD_MAIN=`echo $BRANCHDIFF | awk '{ print $2 }'`
 
 if [ "$AHEAD_MASTER$AHEAD_MAIN" == "00" ] ; then
     echo "INFO: Branches are equal. Eliminating main."
-    git checkout master
-    git branch -u $UPSTREAM
+    git branch -u $UPSTREAM master
+    git symbolic-ref HEAD refs/heads/master
     git branch -d main
     echo "Repo fixed. Git master is now master."
     exit 0
@@ -47,19 +47,19 @@ fi
 
 if [ "$AHEAD_MAIN" == 0 ] ; then 
     echo "INFO: Git master is ahead. Eliminating main."
-    git checkout master
+    git branch -u $UPSTREAM master
+    git symbolic-ref HEAD refs/heads/master
     git branch -d main
-    git branch -u $UPSTREAM
     echo "Repo fixed. Git master is now master."
     exit 0
 fi   
 
 if [ "$AHEAD_MASTER" == 0 ] ; then 
     echo "INFO: Standard-deviating main-branch is ahead. Fixing."
-    git checkout main
     git branch -d master
-    git checkout -b master
-    git branch -u $UPSTREAM
+    git branch master main
+    git branch -u $UPSTREAM master
+    git symbolic-ref HEAD refs/heads/master
     git branch -d main
     echo "Repo fixed. Git master is now master."
     exit 0
